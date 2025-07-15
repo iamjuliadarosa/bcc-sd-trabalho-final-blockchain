@@ -1,0 +1,29 @@
+{
+  "name": "bcc-sd-trabalho-final-blockchain",
+  "version": "1.0.0",
+  "description": "```\r . /project-eleicoes-node/\r ├── protos/                # Arquivo eleicao.proto\r ├── src/\r │   ├── grpc/              # Implementação dos serviços gRPC\r │   ├── blockchain/        # Interação com Hyperledger\r │   ├── controllers/       # Lógica de negócio (ex: votar, login)\r │   ├── models/            # Esquemas Mongoose para MongoDB\r │   ├── middleware/        # JWT auth, validações\r │   └── utils/             # Hash, logging, etc.\r ├── docker-compose.yml\r ├── .env\r └── index.js               # Inicialização do servidor gRPC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamjuliadarosa/bcc-sd-trabalho-final-blockchain.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/iamjuliadarosa/bcc-sd-trabalho-final-blockchain/issues"
+  },
+  "homepage": "https://github.com/iamjuliadarosa/bcc-sd-trabalho-final-blockchain#readme",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/proto-loader": "^0.7.15",
+    "bcrypt": "^6.0.0",
+    "ethers": "^6.15.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.3"
+  }
+}

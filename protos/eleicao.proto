@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package eleicoes;
+
+service EleicaoService {
+  rpc Login (LoginRequest) returns (LoginResponse);
+  rpc RegistrarUsuario (UsuarioRequest) returns (UsuarioResponse);
+  rpc CriarEleicao (CriarEleicaoRequest) returns (EleicaoResponse);
+  rpc ListarEleicoes (Empty) returns (EleicoesResponse);
+  rpc Votar (VotoRequest) returns (VotoResponse);
+  rpc Resultado (ResultadoRequest) returns (ResultadoResponse);
+}
+
+// -------------------- MENSAGENS --------------------
+
+message LoginRequest {
+  string email = 1;
+  string senha = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  string perfil = 2;
+}
+
+message UsuarioRequest {
+  string nome = 1;
+  string email = 2;
+  string senha = 3;
+  string perfil = 4; // "ELEITOR" ou "ADMIN"
+}
+
+message UsuarioResponse {
+  string mensagem = 1;
+}
+
+message CriarEleicaoRequest {
+  string token = 1;
+  string titulo = 2;
+  string descricao = 3;
+  string inicio = 4; // ISO 8601 string
+  string fim = 5;    // ISO 8601 string
+}
+
+message EleicaoResponse {
+  string id = 1;
+  string titulo = 2;
+  string status = 3;
+}
+
+message EleicoesResponse {
+  repeated EleicaoResponse eleicoes = 1;
+}
+
+message VotoRequest {
+  string token = 1;
+  string eleicaoId = 2;
+  string opcao = 3;
+}
+
+message VotoResponse {
+  string mensagem = 1;
+}
+
+message ResultadoRequest {
+  string token = 1;
+  string eleicaoId = 2;
+}
+
+message ResultadoResponse {
+  map<string, int32> votos = 1;
+  string hashBlockchain = 2;
+}
+
+message Empty {}

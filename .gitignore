@@ -1,0 +1,101 @@
+# ================================
+# Node.js
+# ================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log
+
+# ================================
+# Logs
+# ================================
+logs/
+*.log
+*.out
+*.pid
+
+# ================================
+# Sistema Operacional
+# ================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ================================
+# IDEs e editores
+# ================================
+.vscode/
+.idea/
+*.code-workspace
+
+# ================================
+# Arquivos de ambiente
+# ================================
+.env
+.env.*
+*.local
+*.secret
+
+# ================================
+# gRPC (gerados automaticamente)
+# ================================
+*.pb.js
+*.grpc.js
+
+# ================================
+# Smart Contracts (Ethereum)
+# ================================
+artifacts/
+cache/
+build/
+contracts/*.abi
+contracts/*.bin
+typechain/
+coverage/
+deployments/
+gas-report.json
+
+# Truffle
+truffle-config.js
+*.db
+
+# Hardhat
+hardhat.config.js
+hardhat.config.ts
+
+# Ganache
+*.log
+*.pid
+*.lock
+chain-data/
+*.db
+
+# ================================
+# MongoDB
+# ================================
+dump/
+mongod.lock
+
+# ================================
+# Outros
+# ================================
+coverage/
+tmp/
+temp/
+*.bak
+*.orig
+
+# ================================
+# Testes e relatórios
+# ================================
+__tests__/
+__pycache__/
+*.spec.js
+*.test.js
+*.coverprofile
+*.lcov
+.nyc_output/
+coverage-final.json
