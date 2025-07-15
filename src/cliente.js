@@ -85,10 +85,10 @@ function resultado(token, eleicaoId) {
 async function main() {
   try {
     // Registrar dois usuários: admin e eleitor
-    console.log('Registrando admin...');
-    await registrarUsuario('Admin User', 'admin@example.com', 'admin123', 'ADMIN');
-    console.log('Registrando eleitor...');
-    await registrarUsuario('Eleitor User', 'eleitor@example.com', 'eleitor123', 'ELEITOR');
+    //console.log('Registrando admin...');
+    //await registrarUsuario('Admin User', 'admin@example.com', 'admin123', 'ADMIN');
+    //console.log('Registrando eleitor...');
+    //await registrarUsuario('Eleitor User', 'eleitor@example.com', 'eleitor123', 'ELEITOR');
 
     // Login admin
     console.log('Fazendo login admin...');

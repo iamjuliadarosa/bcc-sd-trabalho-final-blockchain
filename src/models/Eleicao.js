@@ -5,10 +5,14 @@ const EleicaoSchema = new mongoose.Schema({
   descricao: String,
   inicio: Date,
   fim: Date,
-  status: { type: String, enum: ['ABERTA', 'ENCERRADA'], default: 'ABERTA' },
-  criado_por: String,
-  criado_em: { type: Date, default: Date.now },
-  hash_blockchain: String
+  criado_por: mongoose.Schema.Types.ObjectId,
+  status: {
+    type: String,
+    enum: ['ABERTA', 'ENCERRADA'],
+    default: 'ABERTA'
+  },
+  hash_blockchain: { type: String }, // hash de resultado, se já foi enviado para a blockchain
+  eleicao_id_blockchain: { type: Number } // ID usado no contrato Ethereum
 });
 
 module.exports = mongoose.model('Eleicao', EleicaoSchema);

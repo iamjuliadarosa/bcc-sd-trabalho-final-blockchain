@@ -50,3 +50,9 @@ grpcurl -plaintext \
   -d "{ \"nome\": \"Julia\", \"email\": \"julia@example.com\", \"senha\": \"1234\", \"perfil\": \"ELEITOR\" }" \
   localhost:50051 eleicoes.EleicaoService/RegistrarUsuario
 ```
+
+
+
+### Referências
+
+https://archive.trufflesuite.com/docs/
