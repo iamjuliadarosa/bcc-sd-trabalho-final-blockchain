@@ -22,6 +22,12 @@
 ```
 ### Ambiente
 
+Desenvolvido no Windows 11
+
+Instalado via MSI:
+- Ganache (https://archive.trufflesuite.com/ganache/)
+- MongoDB (https://www.mongodb.com/try/download/community)
+
 #### gRPC
 ``` bash
 npm install @grpc/grpc-js @grpc/proto-loader

@@ -6,6 +6,7 @@ const EleicaoSchema = new mongoose.Schema({
   inicio: Date,
   fim: Date,
   criado_por: mongoose.Schema.Types.ObjectId,
+  opcoes: [String],
   status: {
     type: String,
     enum: ['ABERTA', 'ENCERRADA'],

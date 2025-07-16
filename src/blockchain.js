@@ -1,23 +1,83 @@
-require('dotenv').config({ path: '../.env' });
 const { ethers } = require('ethers');
-const Eleicao = require('./models/Eleicao');
-
-const abi = [
-  "function registrarResultado(uint256 eleicaoId, string memory hashResultado) public",
-  "function consultarRegistro(uint256 eleicaoId) public view returns (string memory, uint256)"
-];
+require('dotenv').config();
 
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+const abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "eleicaoId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string[]",
+				"name": "opcoes",
+				"type": "string[]"
+			}
+		],
+		"name": "consultarResultado",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "eleicaoId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "opcao",
+				"type": "string"
+			}
+		],
+		"name": "votar",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "votosPorOpcao",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
 const contrato = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, wallet);
 
-// Função que envia resultado para o contrato
-async function registrarResultadoNaBlockchain(eleicaoId, hashResultado) {
-  const tx = await contrato.registrarResultado(eleicaoId, hashResultado);
-  await tx.wait(); // aguarda a confirmação do bloco
-  console.log("✅ Registro na blockchain confirmado.");
+async function registrarVotoNaBlockchain(eleicaoId, opcao) {
+  const tx = await contrato.registrarVoto(eleicaoId, opcao);
+  await tx.wait(); // aguarda confirmação
 }
 
-module.exports = {
-  registrarResultadoNaBlockchain
-};
+module.exports = { registrarVotoNaBlockchain };

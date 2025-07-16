@@ -6,7 +6,7 @@ service EleicaoService {
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc RegistrarUsuario (UsuarioRequest) returns (UsuarioResponse);
   rpc CriarEleicao (CriarEleicaoRequest) returns (EleicaoResponse);
-  rpc ListarEleicoes (Empty) returns (EleicoesResponse);
+  rpc ListarEleicoes (EleicaoRequest) returns (EleicoesResponse);
   rpc Votar (VotoRequest) returns (VotoResponse);
   rpc Resultado (ResultadoRequest) returns (ResultadoResponse);
 }
@@ -38,14 +38,18 @@ message CriarEleicaoRequest {
   string token = 1;
   string titulo = 2;
   string descricao = 3;
-  string inicio = 4; // ISO 8601 string
-  string fim = 5;    // ISO 8601 string
+  string inicio = 4;
+  string fim = 5;
+  repeated string opcoes = 6;
 }
-
+message EleicaoRequest {
+  string token = 1;
+}
 message EleicaoResponse {
   string id = 1;
   string titulo = 2;
   string status = 3;
+  repeated string opcoes = 4;
 }
 
 message EleicoesResponse {

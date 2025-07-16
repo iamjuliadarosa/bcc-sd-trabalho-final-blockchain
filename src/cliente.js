@@ -39,10 +39,10 @@ function login(email, senha) {
 }
 
 // Criar eleição (admin)
-function criarEleicao(token, titulo, descricao, inicio, fim) {
+function criarEleicao(token, titulo, descricao, inicio, fim, opcoes) {
   return new Promise((resolve, reject) => {
     client.CriarEleicao(
-      { token, titulo, descricao, inicio, fim },
+      { token, titulo, descricao, inicio, fim, opcoes },
       (err, response) => {
         if (err) return reject(err);
         resolve(response);
@@ -52,9 +52,9 @@ function criarEleicao(token, titulo, descricao, inicio, fim) {
 }
 
 // Listar eleições
-function listarEleicoes() {
+function listarEleicoes(token) {
   return new Promise((resolve, reject) => {
-    client.ListarEleicoes({}, (err, response) => {
+    client.ListarEleicoes({token}, (err, response) => {
       if (err) return reject(err);
       resolve(response.eleicoes);
     });
@@ -87,46 +87,48 @@ async function main() {
     // Registrar dois usuários: admin e eleitor
     //console.log('Registrando admin...');
     //await registrarUsuario('Admin User', 'admin@example.com', 'admin123', 'ADMIN');
-    //console.log('Registrando eleitor...');
-    //await registrarUsuario('Eleitor User', 'eleitor@example.com', 'eleitor123', 'ELEITOR');
+    console.log('Registrando eleitor...');
+    await registrarUsuario('Eleitor 04', 'eleitor04@example.com', 'eleitor123', 'ELEITOR');
 
     // Login admin
-    console.log('Fazendo login admin...');
-    const adminLogin = await login('admin@example.com', 'admin123');
-    console.log('Admin token:', adminLogin.token);
+    //console.log('Fazendo login admin...');
+    //const adminLogin = await login('admin@example.com', 'admin123');
+    //console.log('Admin token:', adminLogin.token);
 
     // Login eleitor
-    console.log('Fazendo login eleitor...');
-    const eleitorLogin = await login('eleitor@example.com', 'eleitor123');
-    console.log('Eleitor token:', eleitorLogin.token);
+    //console.log('Fazendo login eleitor...');
+    //const eleitorLogin = await login('eleitor@example.com', 'eleitor123');
+    //console.log('Eleitor token:', eleitorLogin.token);
 
     // Criar uma eleição (com token admin)
-    console.log('Criando eleição...');
-    const inicio = new Date(Date.now() + 1000 * 60).toISOString(); // começa em 1 minuto
-    const fim = new Date(Date.now() + 1000 * 60 * 60).toISOString(); // termina em 1 hora
-    const eleicaoCriada = await criarEleicao(
-      adminLogin.token,
-      'Eleição 2025',
-      'Descrição da eleição teste',
-      inicio,
-      fim
-    );
-    console.log('Eleição criada:', eleicaoCriada);
+    //console.log('Criando eleição...');
+    //const inicio = new Date(Date.now() + 1000 * 60).toISOString(); // começa em 1 minuto
+    //const fim = new Date(Date.now() + 1000 * 60 * 60).toISOString(); // termina em 1 hora
+    //const opcoes = ['Opção A', 'Opção B', 'Opção C'];
+    //const eleicaoCriada = await criarEleicao(
+    //  adminLogin.token,
+    //  'Eleição 2025',
+    //  'Descrição da eleição teste',
+    //  inicio,
+    //  fim,
+    //  opcoes
+    //);
+    //console.log('Eleição criada:', eleicaoCriada);
 
     // Listar eleições
-    console.log('Listando eleições...');
-    const eleicoes = await listarEleicoes();
-    console.log('Eleições:', eleicoes);
+    //console.log('Listando eleições...');
+    //const eleicoes = await listarEleicoes(eleitorLogin.token);
+    //console.log('Eleições:', eleicoes);
 
     // Votar na eleição criada (com token eleitor)
-    console.log('Votando...');
-    const votoResp = await votar(eleitorLogin.token, eleicaoCriada.id, 'Opção A');
-    console.log('Resposta voto:', votoResp);
+    //console.log('Votando...');
+    //const votoResp = await votar(eleitorLogin.token, eleicoes[0].id, 'Opção A');
+    //console.log('Resposta voto:', votoResp);
 
     // Pegar resultado (com token admin)
-    console.log('Buscando resultado...');
-    const resultadoEleicao = await resultado(adminLogin.token, eleicaoCriada.id);
-    console.log('Resultado:', resultadoEleicao);
+    //console.log('Buscando resultado...');
+    //const resultadoEleicao = await resultado(adminLogin.token, eleicaoCriada.id);
+    //console.log('Resultado:', resultadoEleicao);
 
   } catch (error) {
     console.error('Erro:', error.message || error);

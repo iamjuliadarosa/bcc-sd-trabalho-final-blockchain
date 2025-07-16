@@ -10,6 +10,8 @@ function gerarToken(usuario) {
 }
 
 function verificarToken(token) {
+  if (!token) throw new Error("Token ausente");
+  //console.log('Recebido token:', token);
   return jwt.verify(token, JWT_SECRET);
 }
 

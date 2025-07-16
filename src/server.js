@@ -20,49 +20,24 @@ const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
 // ABI do contrato
 const abi = [
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "eleicaoId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "hashResultado",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
-			}
-		],
-		"name": "RegistroCriado",
-		"type": "event"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
 				"name": "eleicaoId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string[]",
+				"name": "opcoes",
+				"type": "string[]"
 			}
 		],
-		"name": "consultarRegistro",
+		"name": "consultarResultado",
 		"outputs": [
 			{
-				"internalType": "string",
+				"internalType": "uint256[]",
 				"name": "",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",
@@ -77,11 +52,11 @@ const abi = [
 			},
 			{
 				"internalType": "string",
-				"name": "hashResultado",
+				"name": "opcao",
 				"type": "string"
 			}
 		],
-		"name": "registrarResultado",
+		"name": "votar",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -92,19 +67,19 @@ const abi = [
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"name": "registros",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
 			},
 			{
 				"internalType": "string",
-				"name": "hashResultado",
+				"name": "",
 				"type": "string"
+			}
+		],
+		"name": "votosPorOpcao",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -116,6 +91,11 @@ const abi = [
 const contratoEndereco = process.env.CONTRACT_ADDRESS;
 
 const contrato = new Contract(contratoEndereco, abi, wallet);
+
+async function registrarVotoNaBlockchain(eleicaoId, opcao) {
+  const tx = await contrato.votar(eleicaoId, opcao);
+  await tx.wait(); // aguarda confirmação
+}
 
 
 const packageDefinition = protoLoader.loadSync('../protos/eleicao.proto', {
@@ -132,6 +112,24 @@ mongoose.connect('mongodb://localhost:27017/eleicoes', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log("✅ MongoDB conectado")).catch(console.error);
+
+function withAuth(fn) {
+  return async (call, callback) => {
+    try {
+      const token = call.request.token;
+      if (!token) {
+        return callback({ code: grpc.status.UNAUTHENTICATED, message: 'Token não fornecido' });
+      }
+
+      const user = verificarToken(token);
+      call.user = user;
+      
+      await fn(call, callback);
+    } catch (err) {
+      return callback({ code: grpc.status.UNAUTHENTICATED, message: 'Token inválido ou expirado' });
+    }
+  };
+}
 
 // 🧠 Implementações dos métodos gRPC
 const EleicaoService = {
@@ -175,50 +173,55 @@ const EleicaoService = {
         });
         }
     },
-    CriarEleicao: async (call, callback) => {
-        try {
-            const { token, titulo, descricao, inicio, fim } = call.request;
-            const user = verificarToken(token);
-            if (user.perfil !== 'ADMIN') {
+    CriarEleicao: withAuth(async (call, callback) => {
+        const user = call.user;
+        if (user.perfil !== 'ADMIN') {
             return callback({ code: grpc.status.PERMISSION_DENIED, message: 'Apenas admins podem criar eleições.' });
-            }
+        }
+        try {
+            const { token, titulo, descricao, inicio, fim, opcoes } = call.request;
 
             const eleicao = await Eleicao.create({
             titulo,
             descricao,
             inicio: new Date(inicio),
             fim: new Date(fim),
+            opcoes,
             criado_por: user.id
             });
 
             callback(null, {
             id: eleicao._id.toString(),
             titulo: eleicao.titulo,
-            status: eleicao.status
+            status: eleicao.status,
+            opcoes: eleicao.opcoes
             });
         } catch (err) {
             console.error(err);
             callback({ code: grpc.status.INTERNAL, message: 'Erro ao criar eleição' });
         }
-    },
-    ListarEleicoes: async (call, callback) => {
+    }),
+    ListarEleicoes: withAuth(async (call, callback) => {
+        const user = call.user;
         try {
             const lista = await Eleicao.find({});
             const eleicoes = lista.map(e => ({
             id: e._id.toString(),
             titulo: e.titulo,
-            status: e.status
+            status: e.status,
+            opcoes: e.opcoes || []
             }));
+            //console.log(eleicoes);
             callback(null, { eleicoes });
         } catch (err) {
             console.error(err);
             callback({ code: grpc.status.INTERNAL, message: 'Erro ao listar eleições' });
         }
-    },
-    Votar: async (call, callback) => {
+    }),
+    Votar: withAuth(async (call, callback) => {
+        const user = call.user;
         try {
             const { token, eleicaoId, opcao } = call.request;
-            const user = verificarToken(token);
 
             const eleicao = await Eleicao.findById(eleicaoId);
             if (!eleicao || eleicao.status !== 'ABERTA') {
@@ -229,63 +232,66 @@ const EleicaoService = {
             if (votoExistente) {
             return callback({ code: grpc.status.ALREADY_EXISTS, message: 'Usuário já votou nessa eleição' });
             }
+            // Gerar eleicaoIdBlockchain se ainda não existir
+            let eleicaoIdBlockchain = eleicao.eleicao_id_blockchain;
+            if (!eleicaoIdBlockchain) {
+              eleicaoIdBlockchain = Math.floor(Date.now() / 1000); // Exemplo: timestamp como ID
+              eleicao.eleicao_id_blockchain = eleicaoIdBlockchain;
+              await eleicao.save();
+            }
+            await registrarVotoNaBlockchain(eleicaoIdBlockchain, opcao);
 
-            await Voto.create({ usuario_id: user.id, eleicao_id: eleicaoId, opcao });
+            await Voto.create({ usuario_id: user.id, eleicao_id: eleicaoId });
 
             callback(null, { mensagem: 'Voto registrado com sucesso' });
         } catch (err) {
             console.error(err);
             callback({ code: grpc.status.INTERNAL, message: 'Erro ao votar' });
         }
-    },
-    Resultado: async (call, callback) => {
-        try {
-            const { token, eleicaoId } = call.request;
-            const user = verificarToken(token);
-            if (user.perfil !== 'ADMIN') {
+    }),
+    Resultado: withAuth(async (call, callback) => {
+        const user = call.user;
+        if (user.perfil !== 'ADMIN') {
             return callback({ code: grpc.status.PERMISSION_DENIED, message: 'Apenas admins podem ver resultados' });
-            }
+        }
+        try {
+          const { token, eleicaoId } = call.request;
+          const eleicao = await Eleicao.findById(eleicaoId);
+          if (!eleicao) {
+          return callback({ code: grpc.status.NOT_FOUND, message: 'Eleição não encontrada' });
+          }
 
-            const eleicao = await Eleicao.findById(eleicaoId);
-            if (!eleicao) {
-            return callback({ code: grpc.status.NOT_FOUND, message: 'Eleição não encontrada' });
-            }
+          const opcoes = eleicao.opcoes;
+          const eleicaoIdBlockchain = eleicao.eleicao_id_blockchain;
 
-            const votos = await Voto.find({ eleicao_id: eleicaoId });
+          // 1. Chamar o contrato para obter os votos
+          const resultados = await contrato.consultarResultado(eleicaoIdBlockchain, opcoes);
 
-            const contagem = {};
-            for (const voto of votos) {
-            contagem[voto.opcao] = (contagem[voto.opcao] || 0) + 1;
-            }
+          // 2. Montar o objeto { "A": 1, "B": 2, ... }
+          const contagem = {};
+          for (let i = 0; i < opcoes.length; i++) {
+            contagem[opcoes[i]] = parseInt(resultados[i]);
+          }
 
-            const hashSimulado = require('crypto')
+          // 3. Calcular o hash e salvar no Mongo
+          const hashSimulado = require('crypto')
             .createHash('sha256')
             .update(JSON.stringify(contagem))
             .digest('hex');
 
-            // 👉 Definir um ID numérico para blockchain
-            let eleicaoIdBlockchain = eleicao.eleicao_id_blockchain;
-            if (!eleicaoIdBlockchain) {
-            eleicaoIdBlockchain = Math.floor(Date.now() / 1000); // usa timestamp
-            eleicao.eleicao_id_blockchain = eleicaoIdBlockchain;
-            }
+          eleicao.hash_blockchain = hashSimulado;
+          await eleicao.save();
 
-            // 👉 Chamar a função do contrato Ethereum
-            await registrarResultadoNaBlockchain(eleicaoIdBlockchain, hashSimulado);
-
-            eleicao.hash_blockchain = hashSimulado;
-            await eleicao.save();
-
-            callback(null, {
+          callback(null, {
             votos: contagem,
             hashBlockchain: hashSimulado
-            });
+          });
 
         } catch (err) {
             console.error(err);
             callback({ code: grpc.status.INTERNAL, message: 'Erro ao apurar resultado' });
         }
-    }
+    })
 };
 
 // 🏁 Inicializar o servidor gRPC

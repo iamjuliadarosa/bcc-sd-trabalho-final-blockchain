@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .hidden { display: none; }
+    .eleicao { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    #admin-panel, #eleitor-panel { margin-top: 20px; }
+    button { margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>Bem-vindo ao Painel</h1>
+  <button id="logout">Sair</button>
+
+  <!-- Painel ADMIN -->
+  <div id="admin-panel" class="hidden">
+    <!-- ... já dentro do corpo do dashboard.html -->
+    <div id="criar-eleicao-form" style="display: none;">
+      <h3>Nova Eleição</h3>
+      <form id="form-nova-eleicao">
+        <label>Título: <input type="text" name="titulo" required></label><br>
+        <label>Descrição: <input type="text" name="descricao" required></label><br>
+        <label>Início: <input type="datetime-local" name="inicio" required></label><br>
+        <label>Fim: <input type="datetime-local" name="fim" required></label><br>
+
+        <div id="opcoes-container">
+          <label>Opção 1: <input type="text" name="opcoes[]" required></label><br>
+        </div>
+        <button type="button" onclick="adicionarOpcao()">➕ Adicionar Opção</button><br><br>
+
+        <button type="submit">Criar Eleição</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Painel ELEITOR -->
+  <div id="eleitor-panel" class="hidden">
+    <h2>Suas Eleições Disponíveis</h2>
+  </div>
+
+  <h2>Lista de Eleições</h2>
+  <div id="lista-eleicoes"></div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
