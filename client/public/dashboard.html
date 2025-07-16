@@ -5,11 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .hidden { display: none; }
-    .eleicao { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-    #admin-panel, #eleitor-panel { margin-top: 20px; }
-    button { margin-top: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .eleicao {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border-radius: 8px;
+    }
+
+    #admin-panel, #eleitor-panel {
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 10px 16px;
+      font-size: 15px;
+      border: none;
+      background-color: #4a90e2;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    form input[type="text"],
+    form input[type="datetime-local"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 4px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    #opcoes-container label {
+      font-weight: 500;
+    }
+
+    #logout {
+      background-color: #e74c3c;
+      margin-bottom: 20px;
+    }
+
+    #logout:hover {
+      background-color: #c0392b;
+    }
   </style>
 </head>
 <body>
@@ -19,20 +95,28 @@
 
   <!-- Painel ADMIN -->
   <div id="admin-panel" class="hidden">
-    <!-- ... já dentro do corpo do dashboard.html -->
+    <h2>Painel do Administrador</h2>
     <div id="criar-eleicao-form" style="display: none;">
       <h3>Nova Eleição</h3>
       <form id="form-nova-eleicao">
-        <label>Título: <input type="text" name="titulo" required></label><br>
-        <label>Descrição: <input type="text" name="descricao" required></label><br>
-        <label>Início: <input type="datetime-local" name="inicio" required></label><br>
-        <label>Fim: <input type="datetime-local" name="fim" required></label><br>
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" required>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" required>
+
+        <label for="inicio">Início:</label>
+        <input type="datetime-local" id="inicio" name="inicio" required>
+
+        <label for="fim">Fim:</label>
+        <input type="datetime-local" id="fim" name="fim" required>
 
         <div id="opcoes-container">
-          <label>Opção 1: <input type="text" name="opcoes[]" required></label><br>
+          <label for="opcao-1">Opção 1:</label>
+          <input type="text" id="opcao-1" name="opcoes[]" required>
         </div>
-        <button type="button" onclick="adicionarOpcao()">➕ Adicionar Opção</button><br><br>
 
+        <button type="button" onclick="adicionarOpcao()">➕ Adicionar Opção</button><br><br>
         <button type="submit">Criar Eleição</button>
       </form>
     </div>
@@ -40,10 +124,11 @@
 
   <!-- Painel ELEITOR -->
   <div id="eleitor-panel" class="hidden">
-    <h2>Suas Eleições Disponíveis</h2>
+    <h2>Painel do Eleitor</h2>
+    <h3>Suas Eleições Disponíveis</h3>
   </div>
 
-  <h2>Lista de Eleições</h2>
+  <h3>Lista de Eleições</h3>
   <div id="lista-eleicoes"></div>
 
   <script src="js/dashboard.js"></script>

@@ -34,30 +34,36 @@ Este projeto implementa um sistema de eleições digitais distribuídas, que com
 
 ```
 ├── client/
-│   ├── public/
-│   │   ├── js/
-│   │   │   ├── dashboard.js
-│   │   │   └── login.js
-│   │   ├── dashboard.html
-│   |   └── login.html
-│   └── server.js
+│ ├── public/ # Arquivos públicos para o frontend
+│ │ ├── js/
+│ │ │ ├── dashboard.js # Lógica JS do painel do usuário/admin
+│ │ │ └── login.js # Lógica JS para autenticação (login)
+│ │ ├── dashboard.html # Página HTML para dashboard
+│ │ └── login.html # Página HTML de login
+│ └── server.js # Servidor Express que serve frontend e intermedia chamadas gRPC
+│
 ├── protos/
-│   └── eleicao.proto
+│ └── eleicao.proto # Definição da API gRPC (contrato de comunicação)
+│
 ├── src/
-│   ├── contracts/
-│   |   └── EleicaoRegistry.sol
-|   ├── models/
-│   │   ├── Eleicao.js
-│   │   ├── Usuario.js
-│   |   └── Voto.js
-│   ├── utils/
-│   |   └── auth.js
-│   ├── blockchain.js
-│   ├── cliente.js # Arquivo usado para testes em desenvolvimento
-│   ├── deploy.js
-│   └── server.js
-|── LICENSE                  # Documento de licença: MIT License
-└── README.md                  # Este documento
+│ ├── contracts/
+│ │ └── EleicaoRegistry.sol # Smart contract em Solidity para registro de resultados
+│ │
+│ ├── models/
+│ │ ├── Eleicao.js # Modelo Mongoose da eleição
+│ │ ├── Usuario.js # Modelo Mongoose do usuário
+│ │ └── Voto.js # Modelo Mongoose do voto
+│ │
+│ ├── utils/
+│ │ └── auth.js # Funções de geração e verificação de token JWT
+│ │
+│ ├── blockchain.js # Funções auxiliares para interagir com o contrato Ethereum
+│ ├── cliente.js # Cliente de testes para chamadas gRPC
+│ ├── deploy.js # Script de deploy do contrato Ethereum
+│ └── server.js # Servidor gRPC principal
+│
+├── LICENSE # Licença do projeto (MIT)
+└── README.md # Este documento
 ```
 
 ## Pré-requisitos
