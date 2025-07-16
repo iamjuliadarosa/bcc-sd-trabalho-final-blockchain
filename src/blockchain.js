@@ -77,7 +77,7 @@ const contrato = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, wallet);
 
 async function registrarVotoNaBlockchain(eleicaoId, opcao) {
   const tx = await contrato.registrarVoto(eleicaoId, opcao);
-  await tx.wait(); // aguarda confirmação
+  await tx.wait();
 }
 
 module.exports = { registrarVotoNaBlockchain };

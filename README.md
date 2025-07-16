@@ -1,64 +1,132 @@
-# 🗳️ Projeto Final - Sistemas Distribuídos com Blockchain  
-## Tema: Sistema de Eleições com gRPC, MongoDB e Hyperledger
 
+# Sistema de Eleições Distribuídas com Blockchain
 
+Este projeto implementa um sistema de eleições digitais distribuídas, que combina um backend gRPC em Node.js, um frontend web simples, um banco de dados MongoDB e registro dos resultados na blockchain Ethereum para garantir integridade e auditabilidade.
 
-### Estrutura do Projeto
+## Funcionalidades Principais
+
+- **Cadastro e login** de usuários com perfis **ADMIN** e **ELEITOR**.
+- **Admin:**
+  - Criar eleições com título, descrição, período e opções de voto.
+  - Visualizar eleições abertas e encerradas.
+  - Fechar eleições.
+  - Consultar resultados oficiais registrados na blockchain.
+- **Eleitor:**
+  - Listar eleições abertas.
+  - Votar em uma das opções disponíveis.
+- Registro de votos e resultados no banco MongoDB.
+- Registro de hash dos resultados finais na blockchain Ethereum para garantir integridade.
+- Proteção do backend com autenticação JWT.
+- Comunicação entre frontend e backend via REST e gRPC.
+
+## Tecnologias Utilizadas
+
+- Node.js
+- Express (API REST para frontend)
+- gRPC com protobuf para comunicação backend
+- MongoDB para persistência dos dados
+- Ethereum (Ganache para desenvolvimento local)
+- Ethers.js para interação com blockchain
+- JWT para autenticação
+- HTML/CSS/JavaScript para frontend básico
+
+## Estrutura do Projeto
 
 ```
-.
-├── protos/                # Arquivo eleicao.proto
+├── client/
+│   ├── public/
+│   │   ├── js/
+│   │   │   ├── dashboard.js
+│   │   │   └── login.js
+│   │   ├── dashboard.html
+│   |   └── login.html
+│   └── server.js
+├── protos/
+│   └── eleicao.proto
 ├── src/
-│   ├── grpc/              # Implementação dos serviços gRPC
-│   ├── blockchain/        # Interação com Hyperledger
-│   ├── controllers/       # Lógica de negócio (ex: votar, login)
-│   ├── models/            # Esquemas Mongoose para MongoDB
-│   ├── middleware/        # JWT auth, validações
-│   └── utils/             # Hash, logging, etc.
-├── docker-compose.yml
-├── .env
-└── index.js               # Inicialização do servidor gRPC
-
-```
-### Ambiente
-
-Desenvolvido no Windows 11
-
-Instalado via MSI:
-- Ganache (https://archive.trufflesuite.com/ganache/)
-- MongoDB (https://www.mongodb.com/try/download/community)
-
-#### gRPC
-``` bash
-npm install @grpc/grpc-js @grpc/proto-loader
+│   ├── contracts/
+│   |   └── EleicaoRegistry.sol
+|   ├── models/
+│   │   ├── Eleicao.js
+│   │   ├── Usuario.js
+│   |   └── Voto.js
+│   ├── utils/
+│   |   └── auth.js
+│   ├── blockchain.js
+│   ├── cliente.js # Arquivo usado para testes em desenvolvimento
+│   ├── deploy.js
+│   └── server.js
+|── LICENSE                  # Documento de licença: MIT License
+└── README.md                  # Este documento
 ```
 
-#### MongoDB
-``` bash
-npm install mongoose
+## Pré-requisitos
+
+- Node.js v18+ instalado
+- MongoDB rodando localmente (`mongodb://localhost:27017/eleicoes`)
+- Ganache ou outra rede Ethereum local para testes
+- `npm` para instalar dependências
+
+## Como rodar o projeto
+
+1. Clone o repositório:  
+  `git clone <url-do-repo>`  
+  `cd bcc-sd-trabalho-final-blockchain`
+
+2. Instale as dependências:  
+  `npm install`
+
+3. Configure as variáveis de ambiente no arquivo `.env`:  
+```
+RPC_URL=http://localhost:7545  
+PRIVATE_KEY=<sua-chave-privada-ganche>  
+CONTRACT_ADDRESS=<endereco-do-contrato-ethereum>  
+JWT_SECRET=<segredo-para-jwt>
 ```
 
-#### Blockchain
-``` bash
-npm install fabric-network
-```
+4. Inicie o MongoDB localmente.
 
-#### JWT
-``` bash
-npm install jsonwebtoken bcrypt
-```
+5. Compile e faça deploy do contrato Ethereum localmente (usando Hardhat ou Truffle ou src/deploy.js).
 
+6. Inicie o servidor gRPC e API REST:  
+  `node src/server.js`
 
+7. Inicie o servidor do cliente web (se for separado):  
+  `node src/client/server.js`
 
-``` bash
-grpcurl -plaintext \
-  -proto protos/eleicao.proto \
-  -d "{ \"nome\": \"Julia\", \"email\": \"julia@example.com\", \"senha\": \"1234\", \"perfil\": \"ELEITOR\" }" \
-  localhost:50051 eleicoes.EleicaoService/RegistrarUsuario
-```
+8. Acesse o frontend:  
+  http://localhost:3000/login.html
 
 
+## Como usar
 
-### Referências
+- Faça login com usuário ADMIN ou ELEITOR.
+- Admin pode criar eleições e fechar eleições.
+- Eleitor pode visualizar eleições e votar.
+- Resultados são registrados na blockchain para auditoria.
 
-https://archive.trufflesuite.com/docs/
+## Importante
+
+- Votos individuais são armazenados apenas no banco MongoDB para preservar sigilo.
+- O hash dos resultados finais é registrado na blockchain para garantir imutabilidade e transparência.
+- Proteção das rotas via token JWT para evitar acesso não autorizado.
+
+## Próximos passos / melhorias
+
+- Implementar interface mais completa para administração.
+- Melhorar feedbacks e mensagens na UI.
+- Implementar auditoria e verificação dos dados diretamente na blockchain.
+- Suporte para múltiplos tipos de eleição e votações complexas.
+- Deploy em ambiente real.
+
+
+## Contato
+
+Julia da Rosa – julia.rosa.ifc.riodosul@gmail.com
+
+BCC Sistemas Distribuídos – 2025
+
+
+## Licença
+
+MIT License

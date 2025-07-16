@@ -177,8 +177,6 @@ async function verResultado(eleicaoId) {
     alert('Erro: ' + err.message);
   }
 }
-
-
 let contadorOpcoes = 1;
 
 function adicionarOpcao() {
